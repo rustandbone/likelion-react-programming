@@ -4,9 +4,11 @@ import debounce from '@/utils/debounce';
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { FormInput } from './../components/FormInput/FormInput';
+import { Button } from '@/components';
 
 function SignIn() {
-  const { state } = useLocation();
+  const { state } = useLocation(); /* {Pathname, search, hash, state } */
   const navigate = useNavigate();
   const { isAuth } = useAuth();
 
@@ -22,11 +24,17 @@ function SignIn() {
 
     try {
       await pb.collection('users').authWithPassword(email, password);
+      console.log(state.wishLocationPath)
 
       if (!state) {
         navigate('/');
       } else {
-        navigate(state.wishLocationPath);
+        //사용자가 원하는 경로로 접속 요청
+        //로그인 유무 확인이 안되어서 사용자를 로그인 페이지로 이동
+        //로그인 페이지에서 사용자가 로그인 시도 
+        //성공하면 로그인 이력을 남기지 않도록 함
+        const {wishLocationPath} = state; 
+        navigate(wishLocationPath === '/signin' ? '/' : wishLocationPath, { replace: true });
       }
     } catch (error) {
       console.error(error);
@@ -55,64 +63,17 @@ function SignIn() {
           onSubmit={handleSignIn}
           className="flex flex-col gap-2 items-center"
         >
-          <div className="flex flex-col gap-2 w-full">
-            <label
-              htmlFor="email"
-              className="dark:text-zinc-500 dark:hover:text-zinc-300"
-            >
-              이메일
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              defaultValue={formState.email}
-              onChange={handleInput}
-              className="
-              border border-zinc-300 py-1.5 px-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2
-              dark:bg-black dark:border-zinc-300/40 dark:placeholder:text-zinc-600 dark:text-sky-400 dark:focus:ring-1 dark:focus:ring-sky-400 dark:focus:ring-offset-1
-            "
-            />
-          </div>
-          <div className="flex flex-col gap-2 w-full">
-            <label
-              htmlFor="password"
-              className="dark:text-zinc-500 dark:hover:text-zinc-300"
-            >
-              패스워드
-            </label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              defaultValue={formState.password}
-              onChange={handleInput}
-              className="
-              border border-zinc-300 py-1.5 px-4 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2
-              dark:bg-black dark:border-zinc-300/40 dark:placeholder:text-zinc-600 dark:text-sky-400 dark:focus:ring-1 dark:focus:ring-sky-400 dark:focus:ring-offset-1
-            "
-            />
-          </div>
-          <div className="flex gap-2 mt-5">
-            <button
-              type="submit"
-              className="
-                py-1 px-3.5 border-2 border-zinc-300 hover:border-zinc-400 rounded-full
-              dark:text-sky-400 dark:border-sky-400 dark:border-[1px] dark:hover:bg-sky-400 dark:hover:text-sky-50 dark:hover:border-sky-500
-              "
-            >
-              로그인
-            </button>
-            <button
-              type="reset"
-              className="
-                py-1 px-3.5 border-2 border-zinc-200 bg-zinc-200 hover:bg-zinc-300 hover:border-zinc-300 rounded-full
-                dark:bg-zinc-400 dark:border-zinc-400
-              "
-            >
-              취소
-            </button>
-          </div>
+          <FormInput type="email" label="이메일" name="email" 
+            defaultValue={formState.email}
+            onChange={handleInput}/>
+          <FormInput type="password" label="패스워드" name="password" 
+            defaultValue={formState.password}
+            onChange={handleInput}/>
+
+          <Button.Group>
+            <Button type='submit'>로그인</Button>
+            <Button type='reset' secondary>취소</Button>
+          </Button.Group>
         </form>
 
         <div className="flex justify-center mt-8 border-t border-slate-200 pt-8 dark:border-slate-200/30">
