@@ -3,6 +3,10 @@ import { Helmet } from 'react-helmet-async';
 import Header from './partials/Header';
 import Main from './partials/Main';
 
+//Context를 사용하면 요소를 사용하지 않는 자식 컴포넌트도 리렌더링이 모두 일어남
+//성능에 큰 영향을 미치지 않지만, 
+//그 이슈를 해결하고자 zustand 같은 앱 상태 관리 사용
+
 function ReactContextIssue() {
   return (
     <>
@@ -54,10 +58,10 @@ function DemoApp() {
 
   // -----------------------------------------------------------------
 
-  const [count, setCount] = useState(list.length);
+  const [count, setCount] = useState(() => list.length);
 
   const incrementCount = useCallback((by) => {
-    setCount((count) => count + by);
+    setCount((count) => count + by); //큐 대기열을 사용하기 위함
   }, []);
 
   const decrementCount = useCallback((by) => {

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import GrandParent from './partials/GrandParent';
 import { Helmet } from 'react-helmet-async';
 
+//Props Drilling은 퍼포먼스 이슈가 있음
 function ReactContextAPI() {
   const [color, setColor] = useState({
     fg: 'text-blue-50',
@@ -17,6 +18,7 @@ function ReactContextAPI() {
       })),
     600
   );
+
 
   return (
     <>
