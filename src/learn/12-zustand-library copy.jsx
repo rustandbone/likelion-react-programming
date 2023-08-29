@@ -4,40 +4,46 @@ import { string } from 'prop-types';
 import { useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Logo from './partials/Logo';
-import { useLayoutEffect } from 'react';
-// import { useStore } from '@/store/store';
-// import { shallow } from 'zustand/shallow'
-import { useBearsStore } from '@/store/bears';
-import { useEffect } from 'react';
-
-let mounted = false;
 
 function ZustandLibrary() {
-  const bears = useBearsStore(state => state.bears);
-  const addBear = useBearsStore(state => state.addBear);
+  // const cats = useCatsStore(
+  //   /* 비워두면 모든 정보 들어옴 */
+  //   //선택하는 함수 - selector
+  //   (state) => state.cats
+  // );
 
-  useEffect(() => {
-    if(!mounted) {
-      setTimeout(() => addBear('베어투'), 2000)
-      mounted = true;
-    } 
-  }, [addBear])
+  // const addCat = useCatsStore((state) => state.addCat);
+  // const removeCat = useCatsStore((state) => state.removeCat);
+
+  // const count = useCountStore((state) => state.count);
+  // const increment = useCountStore(state => state.increment);
+  // const decrement = useCountStore(state => state.decrement);
+  // const reset = useCountStore(state => state.reset);
+
+  const { increment, decrement, reset } = useCountStore(state => {
+    const { count, ...restActions } = state;
+    return restActions
+  })
 
   return (
     <>
       <Helmet>
         <title>Zustand Library - Learn</title>
       </Helmet>
-
-      <div>
-        {
-          bears.map(bear => (<span key={bear.id}>{bear.name}</span>))
-        }
-
-      </div>
-
-
       <h2 className="headline text-sky-500">Zustand 라이브러리 활용</h2>
+
+      {/* <button type='button' onClick={() => addCat({name: '더미', age: 7, gender: 'female'})}>
+        냥이 모집
+      </button>
+      <button type='button' onClick={() => removeCat('더미')}>
+        냥이 졸업
+      </button> */}
+
+      <div className='flex gap-6'>
+        <button onClick={() => increment(10)}>+</button>
+        <button onClick={() => decrement(5)}>-</button>
+        <button onClick={reset}>reset</button>
+      </div>
 
       <details className="mb-10">
         <summary>Zustand 발음 어떻게 해야할까요?</summary>
@@ -118,15 +124,14 @@ export default ZustandLibrary;
 /* -------------------------------------------------------------------------- */
 
 function DisplayCount() {
-  const list = useListStore((state) => state.list);
-  // const count = useCountStore((state) => state.count);
+  const count = useCountStore((state) => state.count);
 
   return (
     <header className="header">
       <h1>
         <Logo />
       </h1>
-      <output className="output">{list.length}</output>
+      <output className="output">{count}</output>
     </header>
   );
 }
@@ -163,11 +168,6 @@ function AddItemControl() {
 
 function ItemList() {
   const list = useListStore((state) => state.list);
-  const increment = useCountStore((state) => state.increment);
-
-  useLayoutEffect(() => {
-    increment(list.length);
-  }, [increment, list])
 
   return (
     <ul className={`my-5 list ${list.length === 0 ? 'empty' : ''}`}>
